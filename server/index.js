@@ -37,17 +37,17 @@ const redisPublisher = redisClient.duplicate()
 
 // Express route handlers
 app.get('/', (req, res) => {
-  redis.send('Hi')
+  res.send('Hi')
 })
 
 app.get('/values/all', async (req, res) => {
   const values = await pgClient.query('SELECT * FROM values')
-  redis.send(values.rows)
+  res.send(values.rows)
 })
 
 app.get('/values/current', async (req, res) => {
   redisClient.hgetall('values', (err, values) => {
-    redis.send(values)
+    res.send(values)
   })
 })
 

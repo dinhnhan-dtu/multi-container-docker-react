@@ -34,7 +34,7 @@ class Fib extends Component {
         this.setState({ index: '' });
       };
 
-    rederSeenIndexes() {
+    renderSeenIndexes() {
         return this.state.seenIndexes.map(({number}) => number).join(', ');
     }
 
@@ -64,7 +64,7 @@ class Fib extends Component {
                 </form>
 
                 <h3>Index I have seen:</h3>
-                {this.rederSeenIndexes()}
+                {this.renderSeenIndexes()}
                 <h3>Calculated values:</h3>
                 {this.renderValues()}
             </div>
