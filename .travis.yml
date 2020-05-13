@@ -22,4 +22,17 @@ after_success:
   - docker push atdinhnhan/multi-server
   - docker push atdinhnhan/multi-worker
 
+deploy:
+  edge: true
+  provider: elasticbeanstalk
+  region: ap-southeast-1
+  app: multi-docker
+  env: MultiDocker-env
+  bucket_name: elasticbeanstalk-ap-southeast-1-805444218240
+  bucket_path: multi-docker
+  on:
+    branch: master
+  access_key_id: $AWS_ACCESS_KEY
+  secret_access_key: $AWS_SECRET_KEY
+
 language: generic
