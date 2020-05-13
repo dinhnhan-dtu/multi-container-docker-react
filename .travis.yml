@@ -1,0 +1,22 @@
+sudo: required
+services:
+  - docker
+
+before_install:
+  - docker build -t nhandd/docker-react -f ./client/Dockerfile.dev ./client
+
+scripts:
+  - docker run nhandd/docker-react npm test -- --coverage
+
+after_success:
+  - docker build -t nhandd/multi-client ./client
+  - docker build -t nhandd/multi-nginx ./nginx
+  - docker build -t nhandd/multi-server ./server
+  - docker build -t nhandd/multi-worker ./worker
+  # Login Docker
+  - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_ID" -password-stdin
+  # Take those images and push them to docker hub
+  - docker push nhandd/multi-client
+  - docker push nhandd/multi-nginx
+  - docker push nhandd/multi-server
+  - docker push nhandd/multi-worker
