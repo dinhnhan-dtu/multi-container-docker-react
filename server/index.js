@@ -22,7 +22,7 @@ const pgClient = new Pool({
 pgClient.on('error', () => console.log('Lost PG connection'))
 
 pgClient
-  .query('CREATE TABLE IF NOT EXISTS value (number INT)')
+  .query('CREATE TABLE IF NOT EXISTS seen (number INT)')
   .catch((err) => console.log(err))
 
 // Redis Client Setup
@@ -41,29 +41,30 @@ app.get('/', (req, res) => {
 })
 
 app.get('/values/all', async (req, res) => {
-  const values = await pgClient.query('SELECT * FROM values')
+  const values = await pgClient.query('SELECT * FROM seen')
   res.send(values.rows)
 })
 
 app.get('/values/current', async (req, res) => {
-  redisClient.hgetall('values', (err, values) => {
+  redisClient.hgetall('seen', (err, values) => {
     res.send(values)
   })
 })
 
 app.post('/values', async (req, res) => {
-    const index = req.body.index;
+  const index = req.body.index
 
-    if (parseInt(index) > 40) {
-        return res.status(422).send('Index top high');
-    }
+  if (parseInt(index) > 40) {
+    return res.status(422).send('Index top high')
+  }
 
-    redisClient.hset('values', index, 'Nothing yet');
-    redisPublisher.publish('insert', index);
-    pgClient.query('INSERT INTO values(number) VALUES($1)', [index]);
-    res.send({working: true});
-});
+  redisClient.hset('seen', index, 'Nothing yet')
+  redisPublisher.publish('insert', index)
+  pgClient.query('INSERT INTO seen(number) VALUES($1)', [index])
 
-app.listen(5000, err => {
-    console.log('Listening on port 5000');
-});
+  res.send({ working: true })
+})
+
+app.listen(5000, (err) => {
+  console.log('Listening')
+})
